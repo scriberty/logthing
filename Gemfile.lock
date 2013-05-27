@@ -15,6 +15,7 @@ GEM
     mime-types (1.23)
     multi_json (1.7.4)
     nokogiri (1.5.9)
+    oj (2.0.14)
     rake (10.0.4)
     rest-client (1.6.7)
       mime-types (>= 1.16)
@@ -34,5 +35,6 @@ PLATFORMS
 DEPENDENCIES
   curb
   nokogiri
+  oj
   ruby-progressbar
   tire
