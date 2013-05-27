@@ -36,5 +36,6 @@ DEPENDENCIES
   curb
   nokogiri
   oj
+  rake
   ruby-progressbar
   tire
