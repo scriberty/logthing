@@ -2,24 +2,26 @@
 
 * http://github.com/bleything/logthing
 
-## DESCRIPTION:
+## Description
 
 I have years of IM logs. They're just sitting on disk not being particularly
 useful. Logthing is an effort to make them accessible again.
 
-## FEATURES:
-
-* imports and indexes your adium logs
-
-## REQUIREMENTS:
+## Requirements
 
 * Ruby
+* ElasticSearch
 
-## INSTALL:
+## Install
 
-Lemme get back to you on that.
+In your ElasticSearch directory:
 
-## LICENSE:
+    $ bin/plugin -install bleything/logthing
+    $ cd plugins/logthing
+    $ bundle install
+    $ bundle exec rake import
+
+## License
 
 (The MIT License)
 
