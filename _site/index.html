@@ -13,7 +13,7 @@
           <div class="container">
             <a class="brand">logthing</a>
             <form class="offset6 span4 input-append navbar-search" ng-submit="search()">
-              <input autofocus class="input-block-level" ng-model="queryTerm" type="text" placeholder="search terms">
+              <input autofocus class="input-block-level" ng-model="queryTerm" ng-change="search()" type="text" placeholder="search terms">
               <submit ng-click="search()" class="btn">Search</submit>
             </form>
           </div>
