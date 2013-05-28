@@ -29,7 +29,7 @@
             via
             <span class="medium">{{ doc._source.medium }}</span>
           </div>
-          <span class="ts">{{ doc._source.ts }}</span>
+          <span class="ts">{{ doc._source.ts | date:'d MMM yyyy @ h:mm:ss a' }}</span>
           <span class="text">{{ doc._source.text }}</span>
         </div>
       </div>
