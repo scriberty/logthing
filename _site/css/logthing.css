@@ -1,0 +1,33 @@
+body {
+    padding-top: 60px;
+}
+
+.message {
+    border-bottom: 1px dotted #ccc;
+    position: relative;
+}
+
+.message .parties {
+    font-size: 0.8em;
+    color: #aaa;
+}
+
+.message .parties .from {
+    color: red;
+}
+
+.message .parties .to {
+    color: blue;
+}
+
+.message .parties .medium {
+    color: green;
+}
+
+.message .ts {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 0.7em;
+    color: #aaa;
+}

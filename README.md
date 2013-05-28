@@ -20,6 +20,7 @@ In your ElasticSearch directory:
     $ cd plugins/logthing
     $ bundle install
     $ bundle exec rake import
+    $ open http://localhost:9200/_plugin/logthing/
 
 ## License
 

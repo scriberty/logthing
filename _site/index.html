@@ -1,0 +1,43 @@
+<!doctype html>
+<html ng-app="logthing">
+  <head>
+    <title>logthing</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/logthing.css">
+  </head>
+
+  <body ng-controller="SearchCtrl">
+    <div class="container">
+      <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+          <div class="container">
+            <a class="brand">logthing</a>
+            <form class="offset6 span4 input-append navbar-search" ng-submit="search()">
+              <input autofocus class="input-block-level" ng-model="queryTerm" type="text" placeholder="search terms">
+              <submit ng-click="search()" class="btn">Search</submit>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="message" ng-repeat="doc in results.hits.hits">
+          <div class="parties">
+            <abbr class="from" title="{{ doc._source.from.account }}">{{ doc._source.from.name }}</abbr>
+            to
+            <abbr class="to" title="{{ doc._source.to.account }}">{{ doc._source.to.name }}</abbr>
+            via
+            <span class="medium">{{ doc._source.medium }}</span>
+          </div>
+          <span class="ts">{{ doc._source.ts }}</span>
+          <span class="text">{{ doc._source.text }}</span>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/angular.js"></script>
+    <script src="js/elastic.js"></script>
+    <script src="js/elastic-angular.js"></script>
+    <script src="js/logthing.js"></script>
+  </body>
+</html>
