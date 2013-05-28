@@ -21,6 +21,15 @@ end
 desc "Import Adium logs"
 task :import => ["import:adium"]
 
+def extract(evt, out)
+  out[:sender] = evt['sender']
+  out[:alias]  = evt['alias']
+  out[:text]   = evt.text
+  out[:ts]     = evt['time']
+
+  return out
+end
+
 namespace :import do
   task :adium => :check do
     puts "Finding files..."
@@ -37,6 +46,8 @@ namespace :import do
         components = path.sub(/^#{LOG_ROOT}/, '').split('/').reject(&:blank?)
         medium, account = components.first.split('.', 2)
 
+        xml = Nokogiri::XML(File.read path)
+
         metadata = {
           medium: medium,
           account: account,
@@ -44,17 +55,29 @@ namespace :import do
         }
 
         entries = []
-        Nokogiri::XML(File.read path).xpath('//xmlns:message').each do |msg|
-          entry = metadata.dup
-          entry[:sender] = msg['sender']
-          entry[:sender_name] = msg['alias']
+
+        ### pull all messages
+        xml.xpath('//xmlns:message').each do |msg|
+          entry = extract(msg, metadata.dup)
+
+          entry[:type] = :message
           entry[:text] = msg.text
-          entry[:ts] = msg['time']
 
           entries << entry
         end
 
-        import entries
+        ### events like going online/offline, starting/finish encryption, file
+        ### transfers, away messages, etc
+        xml.xpath('//xmlns:status | //xmlns:event').each do |evt|
+          entry = extract(evt, metadata.dup)
+
+          entry[:type]  = :event
+          entry[:event] = evt['type']
+
+          entries << entry
+        end
+
+        import entries.map {|h| h.delete_if {|k,v| v.nil? }}
       end
     end
   end
