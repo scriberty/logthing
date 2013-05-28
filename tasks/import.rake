@@ -50,20 +50,53 @@ namespace :import do
 
         metadata = {
           medium: medium,
-          account: account,
-          them: components[1]
+          accounts: {
+            local: account,
+            remote: components[1]
+          }
         }
 
         entries = []
+        alias_map = {}
+
+        ### do one pass to grab the aliases
+        xml.xpath('//xmlns:message').each {|m| alias_map[m['sender']] ||= m['alias'] }
 
         ### pull all messages
         xml.xpath('//xmlns:message').each do |msg|
-          entry = extract(msg, metadata.dup)
+          doc = extract(msg, metadata.dup)
 
-          entry[:type] = :message
-          entry[:text] = msg.text
+          if msg['sender'] == doc[:accounts][:local]
+            doc[:from] = {
+              name: alias_map[doc[:accounts][:local]],
+              account: doc[:accounts][:local]
+            }
 
-          entries << entry
+            doc[:to] = {
+              name: alias_map[doc[:accounts][:remote]],
+              account: doc[:accounts][:remote]
+            }
+
+          elsif msg['sender'] == doc[:accounts][:remote]
+            doc[:from] = {
+              name: alias_map[doc[:accounts][:remote]],
+              account: doc[:accounts][:remote]
+            }
+
+            doc[:to] = {
+              name: alias_map[doc[:accounts][:local]],
+              account: doc[:accounts][:local]
+            }
+
+          else
+            doc[:from] = { name: :unknown, account: :unknown }
+            doc[:to]   = { name: :unknown, account: :unknown }
+          end
+
+          doc[:type] = :message
+          doc[:text] = msg.text
+
+          entries << doc
         end
 
         ### events like going online/offline, starting/finish encryption, file
