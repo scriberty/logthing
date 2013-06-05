@@ -3,9 +3,10 @@ require 'test_helper'
 describe Logthing::Event do
   let(:sender)  { "ben@example.com"           }
   let(:time)    { "2013-06-03T19:03:19-08:00" }
-  let(:type)    { "windowOpened"              }
+  let(:type)    { "fileTransferCompleted"     }
+  let(:content) { "Successfully sent cat.png" }
 
-  let(:xml)   { %Q[<event type="#{type}" sender="#{sender}" time="#{time}"></event>] }
+  let(:xml)   { %Q[<event type="#{type}" sender="#{sender}" time="#{time}">#{content}</event>] }
   let(:event) { Logthing::Event.from_xml(xml) }
 
   describe '.to_xml' do
@@ -31,14 +32,19 @@ describe Logthing::Event do
     assert_equal time, event.time
   end
 
+  it "exposes the event content" do
+    assert_equal content, event.content
+  end
+
   describe '#to_indexed_json' do
     let(:json) { event.to_indexed_json }
     let(:obj)  { JSON.parse json       }
 
-    it 'includes the event type, sender, and time' do
+    it 'includes the event type, sender, time, and content' do
       assert_equal type,    obj['event']
       assert_equal sender,  obj['sender']
       assert_equal time,    obj['time']
+      assert_equal content, obj['content']
     end
   end
 end
