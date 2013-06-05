@@ -1,19 +1,16 @@
 require 'test_helper'
 
 describe Logthing::Chat do
-  let(:account) { "ben@example.com" }
-  let(:service) { "Jabber"          }
-
   let(:xml) {
     <<-EOXML
     <?xml version="1.0" encoding="UTF-8" ?>
     <chat xmlns="http://purl.org/net/ulf/ns/0.4-02" account="#{account}" service="#{service}" adiumversion="1.5.4" buildid="5efcd11df694">
-    <event type="windowOpened" sender="ben@example.com" time="2013-06-03T18:56:34-08:00"></event>
-    <message sender="ben@example.com" time="2013-06-03T19:03:19-08:00" alias="Ben Bleything">message content!</message>
-    <message sender="other@example.com" time="2013-06-03T19:12:31-08:00" alias="Other Party">oh hi</message>
-    <event type="windowClosed" sender="other@example.com" time="2013-06-03T19:14:49-08:00"></event> 
-    <status type="offline" sender="other@example.com" time="2013-06-03T19:14:50-08:00" alias="Other Party"></status>
-    <event type="windowClosed" sender="ben@example.com" time="2013-06-03T19:15:07-08:00"></event>
+    <event type="windowOpened" sender="#{account}" time="2013-06-03T18:56:34-08:00"></event>
+    <message sender="#{account}" time="2013-06-03T19:03:19-08:00" alias="Ben Bleything">message content!</message>
+    <message sender="#{sender}" time="2013-06-03T19:12:31-08:00" alias="Other Party">oh hi</message>
+    <event type="windowClosed" sender="#{sender}" time="2013-06-03T19:14:49-08:00"></event> 
+    <status type="offline" sender="#{sender}" time="2013-06-03T19:14:50-08:00" alias="Other Party"></status>
+    <event type="windowClosed" sender="#{account}" time="2013-06-03T19:15:07-08:00"></event>
     </chat>
     EOXML
   }

@@ -1,11 +1,7 @@
 require 'test_helper'
 
 describe Logthing::Event do
-  let(:sender)  { "ben@example.com"           }
-  let(:time)    { "2013-06-03T19:03:19-08:00" }
-  let(:type)    { "fileTransferCompleted"     }
-  let(:content) { "Successfully sent cat.png" }
-
+  let(:type)  { "fileTransferCompleted" }
   let(:xml)   { %Q[<event type="#{type}" sender="#{sender}" time="#{time}">#{content}</event>] }
   let(:event) { Logthing::Event.from_xml(xml) }
 

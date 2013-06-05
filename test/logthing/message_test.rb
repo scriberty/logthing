@@ -1,12 +1,8 @@
 require 'test_helper'
 
 describe Logthing::Message do
-  let(:sender)  { "ben@example.com"           }
-  let(:time)    { "2013-06-03T19:03:19-08:00" }
-  let(:als)     { "Ben Bleything"             }
-  let(:content) { "message content!"          }
-
-  let(:xml)   { %Q[<message sender="#{sender}" time="#{time}" alias="#{als}">#{content}</message>] }
+  let(:als) { "Ben Bleything" }
+  let(:xml) { %Q[<message sender="#{sender}" time="#{time}" alias="#{als}">#{content}</message>] }
 
   # turns out `message` gets used somewhere inside minitest and so we have to
   # abbreviate here.
