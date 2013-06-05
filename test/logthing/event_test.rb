@@ -19,8 +19,8 @@ describe Logthing::Event do
     end
   end
 
-  it "exposes the event type" do
-    assert_equal type, event.type
+  it "exposes the event type as 'event'" do
+    assert_equal type, event.event
   end
 
   it "exposes the event sender" do
@@ -35,10 +35,10 @@ describe Logthing::Event do
     let(:json) { event.to_indexed_json }
     let(:obj)  { JSON.parse json       }
 
-    it 'includes the type, sender, and time' do
-      assert_equal type,   obj['type']
-      assert_equal sender, obj['sender']
-      assert_equal time,   obj['time']
+    it 'includes the event type, sender, and time' do
+      assert_equal type,    obj['event']
+      assert_equal sender,  obj['sender']
+      assert_equal time,    obj['time']
     end
   end
 end

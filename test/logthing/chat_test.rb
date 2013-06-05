@@ -34,7 +34,7 @@ describe Logthing::Chat do
   end
 
   it "converts statuses to events" do
-    assert chat.events.any? {|e| e.type == 'offline' }
+    assert chat.events.any? {|e| e.event == 'offline' }
   end
 
   it "exposes the chat's messages" do
