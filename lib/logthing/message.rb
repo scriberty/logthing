@@ -1,5 +1,5 @@
 class Logthing::Message
-  attr_accessor :sender, :time, :alias, :content
+  attr_accessor :sender, :time, :alias, :content, :account, :service
 
   def self.from_xml(xml)
     xml = Nokogiri::XML(xml).root if xml.is_a? String
@@ -24,6 +24,8 @@ class Logthing::Message
 
   def to_indexed_json
     {
+      :account => account,
+      :service => service,
       :sender  => sender,
       :time    => time,
       :alias   => self.alias,

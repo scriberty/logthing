@@ -8,6 +8,11 @@ describe Logthing::Message do
   # abbreviate here.
   let(:msg) { Logthing::Message.from_xml(xml) }
 
+  before do
+    msg.account = account
+    msg.service = service
+  end
+
   describe '.to_xml' do
     it 'accepts a string or a Nokogiri object' do
       nodes = Nokogiri::XML(xml).root
@@ -35,6 +40,14 @@ describe Logthing::Message do
     assert_equal content, msg.content
   end
 
+  it "exposes the account" do
+    assert_equal account, msg.account
+  end
+
+  it "exposes the service" do
+    assert_equal service, msg.service
+  end
+
   describe 'tire compatibility' do
     it 'has a #_type method that returns "message"' do
       assert_equal 'message', msg._type
@@ -43,6 +56,8 @@ describe Logthing::Message do
     it 'has a #to_indexed_json method that returns the object' do
       obj = JSON.parse(msg.to_indexed_json)
 
+      assert_equal account, obj['account']
+      assert_equal service, obj['service']
       assert_equal sender,  obj['sender']
       assert_equal time,    obj['time']
       assert_equal als,     obj['alias']
