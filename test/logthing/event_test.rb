@@ -36,11 +36,14 @@ describe Logthing::Event do
     assert_equal content, event.content
   end
 
-  describe '#to_indexed_json' do
-    let(:json) { event.to_indexed_json }
-    let(:obj)  { JSON.parse json       }
+  describe 'tire compatibility' do
+    it 'has a #_type method that returns "event"' do
+      assert_equal 'event', event._type
+    end
 
-    it 'includes the event type, sender, time, and content' do
+    it 'has a #to_indexed_json method that returns the object' do
+      obj = JSON.parse(event.to_indexed_json)
+
       assert_equal type,    obj['event']
       assert_equal sender,  obj['sender']
       assert_equal time,    obj['time']

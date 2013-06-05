@@ -39,11 +39,14 @@ describe Logthing::Message do
     assert_equal content, msg.content
   end
 
-  describe '#to_indexed_json' do
-    let(:json) { msg.to_indexed_json }
-    let(:obj)  { JSON.parse json     }
+  describe 'tire compatibility' do
+    it 'has a #_type method that returns "message"' do
+      assert_equal 'message', msg._type
+    end
 
-    it 'includes the sender, time, alias, and content' do
+    it 'has a #to_indexed_json method that returns the object' do
+      obj = JSON.parse(msg.to_indexed_json)
+
       assert_equal sender,  obj['sender']
       assert_equal time,    obj['time']
       assert_equal als,     obj['alias']

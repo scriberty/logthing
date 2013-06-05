@@ -19,7 +19,9 @@ class Logthing::Event
     other.content == content
   end
 
-  # tire import API
+  ### tire API
+  def _type ; 'event' ; end
+
   def to_indexed_json
     {
       :event   => event,

@@ -19,7 +19,9 @@ class Logthing::Message
     other.alias   == self.alias
   end
 
-  # tire import API
+  ### tire API
+  def _type ; 'message' ; end
+
   def to_indexed_json
     {
       :sender  => sender,
