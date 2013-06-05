@@ -7,11 +7,21 @@ describe Logthing::Message do
   let(:content) { "message content!"          }
 
   let(:xml)   { %Q[<message sender="#{sender}" time="#{time}" alias="#{als}">#{content}</message>] }
-  let(:nodes) { Nokogiri::XML(xml).root }
 
   # turns out `message` gets used somewhere inside minitest and so we have to
   # abbreviate here.
-  let(:msg) { Logthing::Message.from_xml(nodes) }
+  let(:msg) { Logthing::Message.from_xml(xml) }
+
+  describe '.to_xml' do
+    it 'accepts a string or a Nokogiri object' do
+      nodes = Nokogiri::XML(xml).root
+
+      from_xml = Logthing::Message.from_xml(xml)
+      from_nkg = Logthing::Message.from_xml(nodes)
+
+      assert_equal from_xml, from_nkg
+    end
+  end
 
   it "exposes the sending account" do
     assert_equal sender, msg.sender
