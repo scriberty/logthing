@@ -38,4 +38,16 @@ describe Logthing::Message do
   it "exposes the message content" do
     assert_equal content, msg.content
   end
+
+  describe '#to_indexed_json' do
+    let(:json) { msg.to_indexed_json }
+    let(:obj)  { JSON.parse json     }
+
+    it 'includes the sender, time, alias, and content' do
+      assert_equal sender,  obj['sender']
+      assert_equal time,    obj['time']
+      assert_equal als,     obj['alias']
+      assert_equal content, obj['content']
+    end
+  end
 end

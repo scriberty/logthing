@@ -16,4 +16,13 @@ class Logthing::Event
     other.sender == sender &&
     other.time   == time
   end
+
+  # tire import API
+  def to_indexed_json
+    {
+      :type   => type,
+      :sender => sender,
+      :time   => time
+    }.to_json
+  end
 end

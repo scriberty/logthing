@@ -30,4 +30,15 @@ describe Logthing::Event do
   it "exposes the event timestamp" do
     assert_equal time, event.time
   end
+
+  describe '#to_indexed_json' do
+    let(:json) { event.to_indexed_json }
+    let(:obj)  { JSON.parse json       }
+
+    it 'includes the type, sender, and time' do
+      assert_equal type,   obj['type']
+      assert_equal sender, obj['sender']
+      assert_equal time,   obj['time']
+    end
+  end
 end

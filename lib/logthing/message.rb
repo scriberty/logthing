@@ -18,4 +18,14 @@ class Logthing::Message
     other.content == content &&
     other.alias   == self.alias
   end
+
+  # tire import API
+  def to_indexed_json
+    {
+      :sender  => sender,
+      :time    => time,
+      :alias   => self.alias,
+      :content => content
+    }.to_json
+  end
 end
