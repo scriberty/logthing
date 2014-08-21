@@ -114,4 +114,56 @@ namespace :import do
       end
     end
   end
+
+  desc "Import phoneview files"
+  task :phoneview, :file do |t, args|
+    file = File.expand_path(args[:file])
+    unless File.exist?(file)
+      puts "#{file} does not exist."
+      exit
+    end
+
+    Tire.index "logthing" do
+      puts "Clearing and recreating index '#{name}'..."
+      delete and create
+
+      common_opts = {
+        :medium => "SMS",
+        :type   => "message"
+      }
+
+      xml = Nokogiri::Slop(File.read file)
+      xml.SMSExport.SMSMessage.each do |msg|
+        doc = common_opts.dup
+        if msg.Kind.text == "Sent"
+          doc[:from] = {
+            :name    => "Ben Bleything",
+            :account => "+15419082187"
+          }
+
+          doc[:to] = {
+            :name    => msg.Name.text,
+            :account => msg.Number.text
+          }
+        elsif msg.Kind.text == "Received"
+          doc[:to] = {
+            :name    => "Ben Bleything",
+            :account => "+15419082187"
+          }
+
+          doc[:from] = {
+            :name    => msg.Name.text,
+            :account => msg.Number.text
+          }
+        else
+          puts "Unknown message kind '#{msg.Kind.text}'"
+        end
+
+        doc[:ts]   = msg.DateTime.text
+        doc[:text] = msg.Message.text
+
+        store doc
+      end
+    end
+  end
 end
