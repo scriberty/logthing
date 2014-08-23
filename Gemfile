@@ -4,7 +4,7 @@ gem 'curb'
 gem 'nokogiri'
 gem 'oj'
 gem 'ruby-progressbar'
-gem 'tire'
+gem 'elasticsearch', '~> 1.0'
 
 group :development do
   gem 'rake'

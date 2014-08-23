@@ -38,80 +38,87 @@ namespace :import do
       files << path if path =~ /xml$/
     end
 
-    Tire.index "logthing" do
-      puts "Clearing and recreating index '#{name}'..."
-      delete and create
+    es = Elasticsearch::Client.new
 
-      files.each_with_progress("Importing", "log files") do |path|
-        components = path.sub(/^#{LOG_ROOT}/, '').split('/').reject(&:blank?)
-        medium, account = components.first.split('.', 2)
+    # Tire.index "logthing" do
+    puts "Clearing and recreating index 'logthing'..."
+    es.indices.delete index: 'logthing'
+    es.indices.create index: 'logthing', body: {
+      settings: {index: {number_of_replicas: 0}}
+    }
 
-        xml = Nokogiri::XML(File.read path)
+    files.each_with_progress("Importing", "log files") do |path|
+      components = path.sub(/^#{LOG_ROOT}/, '').split('/').reject {|s| s.strip.empty? }
+      medium, account = components.first.split('.', 2)
 
-        metadata = {
-          medium: medium,
-          accounts: {
-            local: account,
-            remote: components[1]
-          }
+      xml = Nokogiri::XML(File.read path)
+      metadata = {
+        medium: medium,
+        accounts: {
+          local: account,
+          remote: components[1]
         }
+      }
 
-        entries = []
-        alias_map = {}
+      entries = []
+      alias_map = {}
 
-        ### do one pass to grab the aliases
-        xml.xpath('//xmlns:message').each {|m| alias_map[m['sender']] ||= m['alias'] }
+      ### do one pass to grab the aliases
+      xml.xpath('//xmlns:message').each {|m| alias_map[m['sender']] ||= m['alias'] }
 
-        ### pull all messages
-        xml.xpath('//xmlns:message').each do |msg|
-          doc = extract(msg, metadata.dup)
+      ### pull all messages
+      xml.xpath('//xmlns:message').each do |msg|
+        doc = extract(msg, metadata.dup)
 
-          if msg['sender'] == doc[:accounts][:local]
-            doc[:from] = {
-              name: alias_map[doc[:accounts][:local]],
-              account: doc[:accounts][:local]
-            }
+        if msg['sender'] == doc[:accounts][:local]
+          doc[:from] = {
+            name: alias_map[doc[:accounts][:local]],
+            account: doc[:accounts][:local]
+          }
 
-            doc[:to] = {
-              name: alias_map[doc[:accounts][:remote]],
-              account: doc[:accounts][:remote]
-            }
+          doc[:to] = {
+            name: alias_map[doc[:accounts][:remote]],
+            account: doc[:accounts][:remote]
+          }
 
-          elsif msg['sender'] == doc[:accounts][:remote]
-            doc[:from] = {
-              name: alias_map[doc[:accounts][:remote]],
-              account: doc[:accounts][:remote]
-            }
+        elsif msg['sender'] == doc[:accounts][:remote]
+          doc[:from] = {
+            name: alias_map[doc[:accounts][:remote]],
+            account: doc[:accounts][:remote]
+          }
 
-            doc[:to] = {
-              name: alias_map[doc[:accounts][:local]],
-              account: doc[:accounts][:local]
-            }
+          doc[:to] = {
+            name: alias_map[doc[:accounts][:local]],
+            account: doc[:accounts][:local]
+          }
 
-          else
-            doc[:from] = { name: :unknown, account: :unknown }
-            doc[:to]   = { name: :unknown, account: :unknown }
-          end
-
-          doc[:type] = :message
-          doc[:text] = msg.text
-
-          entries << doc
+        else
+          doc[:from] = { name: :unknown, account: :unknown }
+          doc[:to]   = { name: :unknown, account: :unknown }
         end
 
-        ### events like going online/offline, starting/finish encryption, file
-        ### transfers, away messages, etc
-        xml.xpath('//xmlns:status | //xmlns:event').each do |evt|
-          entry = extract(evt, metadata.dup)
+        doc[:type] = :message
+        doc[:text] = msg.text
 
-          entry[:type]  = :event
-          entry[:event] = evt['type']
-
-          entries << entry
-        end
-
-        import entries.map {|h| h.delete_if {|k,v| v.nil? }}
+        entries << doc
       end
+
+      ### events like going online/offline, starting/finish encryption, file
+      ### transfers, away messages, etc
+      xml.xpath('//xmlns:status | //xmlns:event').each do |evt|
+        entry = extract(evt, metadata.dup)
+
+        entry[:type]  = :event
+        entry[:event] = evt['type']
+
+        entries << entry
+      end
+
+      updates = entries.map do |entry|
+        { index: { _index: 'logthing', _type: entry.delete(:type), data: entry } }
+      end
+
+      es.bulk body: updates
     end
   end
 end
